@@ -1,9 +1,15 @@
 package com.kerem.dist.server;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 
 public class TokenServer {
+
+
     public static void main(String agrs[]) throws Exception {
 
         while (true) {
@@ -17,6 +23,7 @@ public class TokenServer {
 class Server {
     boolean hasToken = false;
     boolean sendData = false;
+    public static String global = "1000";
     int recport;
 
     void recPort(int recport) {
@@ -34,5 +41,25 @@ class Server {
         ds.close();
         str = new String(dp.getData(), 0, dp.getLength());
         System.out.println("The message is " + str);
+
+        String[] stringArray = str.split(" ");
+        if (stringArray[0].equals("READ")) {
+            read(Integer.valueOf(stringArray[1]));
+        }
+        if (stringArray[0].equals("WRITE")) {
+            write(Integer.valueOf(stringArray[1]));
+        }
+    }
+
+    void read(Integer clientPort) throws IOException {
+        String res = "RESPONSE " + global;
+        DatagramPacket datagramPacket = new DatagramPacket(res.getBytes(StandardCharsets.UTF_8), res.length(), InetAddress.getLocalHost(), clientPort);
+        DatagramSocket datagramSocket = new DatagramSocket(Integer.valueOf(clientPort));
+        datagramSocket.send(datagramPacket);
+        datagramSocket.close();
+    }
+
+    void write(Integer integer) {
+        System.out.println("Resposta: " + integer);
     }
 }

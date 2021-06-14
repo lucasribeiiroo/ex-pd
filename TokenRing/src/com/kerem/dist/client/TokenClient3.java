@@ -6,7 +6,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
-public class TokenClient2 {
+public class TokenClient3 {
     static boolean setSendData;
     static boolean hasToken;
 
@@ -16,15 +16,15 @@ public class TokenClient2 {
         BufferedReader br;
         String str1;
         TokenClient21 tkcl;
-        TokenClient21 ser;
+        TokenClient31 ser;
 
         while (true) {
             lclhost = InetAddress.getLocalHost();
             tkcl = new TokenClient21(lclhost);
-            tkcl.setRecPort(8004);
-            tkcl.setSendPort(9003);
+            tkcl.setRecPort(8003);
+            tkcl.setSendPort(9002);
             lclhost = InetAddress.getLocalHost();
-            ser = new TokenClient21(lclhost);
+            ser = new TokenClient31(lclhost);
             ser.setSendPort(9000);
             System.out.println("entering if");
 
@@ -49,7 +49,7 @@ public class TokenClient2 {
     }
 }
 
-class TokenClient21 {
+class TokenClient31 {
     InetAddress lclhost;
     int sendport, recport;
     boolean setSendData = false;
@@ -57,7 +57,7 @@ class TokenClient21 {
     TokenClient21 tkcl;
     TokenClient21 ser;
 
-    TokenClient21(InetAddress lclhost) {
+    TokenClient31(InetAddress lclhost) {
         this.lclhost = lclhost;
     }
 
@@ -78,7 +78,7 @@ class TokenClient21 {
 
         if (setSendData) {
             System.out.println("Enter the Data");
-            str = "8004";
+            str = "8003";
         }
         ds = new DatagramSocket(sendport);
         dp = new DatagramPacket(str.getBytes(), str.length(), lclhost, sendport - 1000);

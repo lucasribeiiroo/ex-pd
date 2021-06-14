@@ -2,15 +2,18 @@ package com.kerem.dist.client;
 
 import java.io.*;
 import java.net.*;
+import java.util.Objects;
 
 public class TokenClient1 {
+
+
     public static void main(String arg[]) throws Exception {
         InetAddress lclhost;
         BufferedReader br;
         String str = "";
         TokenClient12 tkcl, tkser;
-        boolean hasToken;
-        boolean setSendData;
+        //boolean hasToken;
+        //boolean setSendData;
 
         while (true) {
             lclhost = InetAddress.getLocalHost();
@@ -22,7 +25,7 @@ public class TokenClient1 {
             lclhost = InetAddress.getLocalHost();
             tkser.setSendPort(9000);
 
-            if (tkcl.hasToken == true) {
+            if (tkcl.hasToken) {
                 System.out.println("Do you want to enter the Data --> YES/NO");
                 br = new BufferedReader(new InputStreamReader(System.in));
                 str = br.readLine();
@@ -71,27 +74,46 @@ class TokenClient12 {
         DatagramSocket ds;
         DatagramPacket dp;
 
-        if (setSendData == true) {
+        if (setSendData) {
             System.out.println("sending ");
             System.out.println("Enter the Data");
-            br = new BufferedReader(new InputStreamReader(System.in));
-            str = "ClientOne....." + br.readLine();
+            str = "READ 8002";
             System.out.println("now sending");
         }
+
         ds = new DatagramSocket(sendport);
         dp = new DatagramPacket(str.getBytes(), str.length(), lclhost, sendport - 1000);
         ds.send(dp);
-        ds.close();
-        setSendData = false;
-        hasToken = false;
+
+        if (!str.equals("Token")) {
+            String response = "";
+
+            while (!response.split(" ")[0].equals("RESPONSE")) {
+                response = recData();
+            }
+
+            System.out.println(response.split(" ")[1]);
+            int random = (int) (Math.random() * 100);
+            int result = Integer.parseInt(response.split(" ")[1]) + random;
+
+            str = "WRITE " + result;
+            ds = new DatagramSocket(sendport);
+            dp = new DatagramPacket(str.getBytes(), str.length(), lclhost, sendport - 1000);
+            ds.send(dp);
+        } else {
+            setSendData = false;
+            hasToken = false;
+        }
+
+
     }
 
-    void recData() throws Exception {
+    String recData() throws Exception {
         String msgstr;
         byte buffer[] = new byte[256];
         DatagramSocket ds;
         DatagramPacket dp;
-        ds = new DatagramSocket(recport);
+        ds = new DatagramSocket(8002);
         dp = new DatagramPacket(buffer, buffer.length);
         ds.receive(dp);
         ds.close();
@@ -101,6 +123,6 @@ class TokenClient12 {
         if (msgstr.equals("Token")) {
             hasToken = true;
         }
+        return msgstr;
     }
 }
-
